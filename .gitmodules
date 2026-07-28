@@ -1,0 +1,6 @@
+[submodule "powershell"]
+	path = powershell
+	url = https://github.com/Scawer132/omp-config.git
+[submodule "wezterm"]
+	path = wezterm
+	url = https://github.com/Scawer132/wezterm-config.git
