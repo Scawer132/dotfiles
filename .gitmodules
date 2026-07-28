@@ -4,3 +4,6 @@
 [submodule "wezterm"]
 	path = wezterm
 	url = https://github.com/Scawer132/wezterm-config.git
+[submodule "zsh"]
+	path = zsh
+	url = https://github.com/Scawer132/zsh-config.git
