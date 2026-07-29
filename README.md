@@ -6,12 +6,20 @@
 
 ```
 .
-├── powershell/    submodule → Scawer132/omp-config (Oh My Posh 配置)
+├── oh-my-posh/    submodule → Scawer132/omp-config (Oh My Posh 主题，zsh + PowerShell 共享)
+├── zsh/           submodule → Scawer132/zsh-config (zsh 配置)
 ├── wezterm/       submodule → Scawer132/wezterm-config (fork from KevinSilvester/wezterm-config)
 └── setup.sh       新机器初始化脚本
 ```
 
-本地 `~/.config/powershell` 和 `~/.config/wezterm` 为软链接，指向本仓库对应的 submodule 目录。日常在 `~/.config/` 下编辑和 git 操作，改动天然记录在本仓库中。
+### Prompt 共享机制
+
+`oh-my-posh/` 是 omp-config submodule，zsh 和 PowerShell 共同引用同一份 `config.omp.json`：
+
+- **zsh**（WSL）：`~/dotfiles/zsh/.zshrc` → `source ~/dotfiles/zsh/.zshrc` → `oh-my-posh init --config ~/dotfiles/oh-my-posh/config.omp.json`
+- **PowerShell**（Windows）：`Microsoft.PowerShell_profile.ps1` → `oh-my-posh init --config C:\Users\lenovo\dotfiles\oh-my-posh\config.omp.json`
+
+修改 prompt 只需编辑 omp-config 仓库的 `config.omp.json`，两端 submodule update 即可同步。
 
 ## 克隆到新机器
 
@@ -31,11 +39,34 @@ git submodule update --init --recursive
 
 ## 日常维护
 
-### 修改配置
+### 修改 Prompt（oh-my-posh）
 
-在 `~/.config/powershell/` 或 `~/.config/wezterm/` 下正常操作（软链接透明）， submodule 内直接 commit & push 即可。
+```bash
+cd ~/dotfiles/oh-my-posh
+# 编辑 config.omp.json
+git commit -m "feat: 调整 prompt 样式"
+git push
+cd ..
+git add oh-my-posh
+git commit -m "update: oh-my-posh submodule"
+git push
+# 另一端: git pull && git submodule update --remote
+```
 
-### 更新 submodule 到各自最新
+### 修改 zsh 配置
+
+```bash
+cd ~/dotfiles/zsh
+# 编辑 config/*.zsh
+git commit -m "feat: xxx"
+git push
+cd ..
+git add zsh
+git commit -m "update: zsh submodule"
+git push
+```
+
+### 更新所有 submodule 到各自最新
 
 ```bash
 cd ~/dotfiles
