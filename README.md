@@ -39,13 +39,17 @@ git submodule update --init --recursive
 
 ## 日常维护
 
+> ⚠️ **重要**：在 submodule 内操作前，务必先 `git checkout <branch>`。父仓库记录的是 commit SHA 而非分支名，同步后 submodule 处于分离头指针状态，此时提交会成为悬空对象，切换分支后丢失。
+
 ### 修改 Prompt（oh-my-posh）
 
 ```bash
 cd ~/dotfiles/oh-my-posh
+git checkout main
 # 编辑 config.omp.json
+git add config.omp.json
 git commit -m "feat: 调整 prompt 样式"
-git push
+git push origin main
 cd ..
 git add oh-my-posh
 git commit -m "update: oh-my-posh submodule"
@@ -57,33 +61,51 @@ git push
 
 ```bash
 cd ~/dotfiles/zsh
+git checkout main
 # 编辑 config/*.zsh
+git add .
 git commit -m "feat: xxx"
-git push
+git push origin main
 cd ..
 git add zsh
 git commit -m "update: zsh submodule"
 git push
+# 另一端: git pull && git submodule update --remote
 ```
 
 ### 更新所有 submodule 到各自最新
 
 ```bash
 cd ~/dotfiles
+# 确保每个 submodule 在分支上（避免分离头指针下 merge 丢失提交）
+git submodule foreach 'git checkout main 2>/dev/null || git checkout master'
 git submodule update --remote --merge
 git commit -m "update: 更新 submodule 到最新版本"
 git push
+# 另一端: git pull && git submodule update --remote
 ```
 
 ### 同步 wezterm 上游
 
 ```bash
 cd ~/dotfiles/wezterm
+git checkout main
 git fetch upstream
 git merge upstream/master
-git push origin master
+git push origin main
 cd ..
 git add wezterm
 git commit -m "update: 同步 wezterm 上游变更"
 git push
+# 另一端: git pull && git submodule update --remote
 ```
+
+## 常见问题
+
+### 为什么 submodule 显示分离头指针？
+
+父仓库记录的是 submodule 的 commit SHA 而非分支名。执行 `git submodule update` 后，submodule 会 checkout 到该 SHA，处于分离头指针状态。这是正常现象，两端内容一致。
+
+### 在 submodule 内修改前必须做什么？
+
+先执行 `git checkout <branch>`，确保 HEAD 指向分支而非 commit SHA。否则提交会成为悬空对象，切换分支后丢失。
